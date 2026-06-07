@@ -24,6 +24,7 @@ async function loadNotes() {
         const noteDiv = document.createElement("div");
         noteDiv.className = "note-item";
         noteDiv.innerText = note.title + " - " + note.content;
+        noteDiv.onclick = () => openEditModal(note);
 
         const deleteBtn = document.createElement("button");
         deleteBtn.innerText = "🗑️";
@@ -36,6 +37,7 @@ async function loadNotes() {
 
         list.appendChild(wrapper);
     });
+
 }
 
 // DELETE NOTE
@@ -58,35 +60,65 @@ async function deleteNote(id) {
 // OPEN MODAL
 function openModal() {
     document.getElementById("overlay").classList.remove("hidden");
+    document.querySelector(".add-btn").style.display = "none";
+
 }
 
 // CLOSE MODAL
 function closeModal() {
     document.getElementById("overlay").classList.add("hidden");
+    document.querySelector(".add-btn").style.display = "block";
 }
 
+
+function openEditModal(note) {
+    openModal();
+
+    document.getElementById("modalTitle").value = note.title;
+    document.getElementById("modalContent").innerHTML = note.content;
+
+    window.currentEditId = note.id;
+}
+
+
 // SAVE NOTE
-async function saveNote() {
+aasync function saveNote() {
     const title = document.getElementById("modalTitle").value;
     const content = document.getElementById("modalContent").innerHTML;
 
+    console.log("Saving:", title, content);
+
     if (!title || !content) return;
 
-    await fetch(`${API_URL}/notes`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ title, content })
-    });
+    if (window.currentEditId) {
+        // ✅ UPDATE existing note
+        await fetch(`${API_URL}/notes/${window.currentEditId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ title, content })
+        });
+
+        window.currentEditId = null;
+    } else {
+        // ✅ CREATE new note
+        await fetch(`${API_URL}/notes`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ title, content })
+        });
+    }
 
     document.getElementById("modalTitle").value = "";
-    document.getElementById("modalContent").value = "";
-    document.getElementById("modalContent").innerHTML = ""
+    document.getElementById("modalContent").innerHTML = "";
 
     closeModal();
     loadNotes();
 }
+
 
 // FORMAT TEXT (basic)
 function formatText(type) {

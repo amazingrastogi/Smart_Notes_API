@@ -4,12 +4,16 @@ body {
     margin: 0;
 }
 
+/* ✅ Centered layout */
 .container {
-    width: 400px;
-    margin: 50px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
+    width: 600px;
+    margin: 40px auto;
+    padding: 10px;
+}
+
+/* ✅ Center title */
+.container h1 {
+    text-align: center;
 }
 
 /* EMPTY STATE */
@@ -20,98 +24,47 @@ body {
     margin-top: 20px;
 }
 
-/* NOTES GRID */
-.note-wrapper {
+/* ✅ NOTES GRID (Google Keep style) */
+#notesList {
     display: grid;
-    grid-template-columns: 1fr 40px;
-    align-items: center;
-    margin: 10px 0;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
 }
 
-/* NOTE BOX */
+/* ✅ NOTE CARD */
 .note-item {
-    background: #eef1f5;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-/* DELETE BUTTON */
-.delete-btn {
-    background: none;
-    border: none;
-    font-size: 18px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
     cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* MODAL */
-
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-
-    background: white;   /* not dark overlay anymore */
-
-    display: flex;
-    flex-direction: column;
+/* ✅ Hover polish */
+.note-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
 }
 
-
-.hidden {
-    display: none;
-}
-
-
-.modal {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 20px;
-}
-
-
-/* INPUTS */
-
-.modal input {
-    font-size: 20px;
-    border: none;
-    border-bottom: 2px solid #ccc;
-    margin-bottom: 15px;
-}
-
-.modal textarea {
-    flex: 1;
-    resize: none;
-    border: none;
+/* ✅ Title */
+.note-title {
     font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
 }
 
-
-/* TOOLBAR */
-.toolbar {
-    display: flex;
-    gap: 10px;
-}
-.toolbar button.active {
-    background: #007bff;
-    color: white;
+/* ✅ Content */
+.note-content {
+    font-size: 14px;
+    color: #555;
 }
 
-/* SAVE BUTTON */
-
-.save-btn {
-    background: #228B22;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 5px;
-    float: right;
-}
-.floating-btn {
+/* ✅ Floating Add Button */
+.add-btn {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 25px;
+    right: 25px;
 
     background: black;
     color: white;
@@ -121,17 +74,91 @@ body {
     width: 50px;
     height: 50px;
 
-    font-size: 24px;
+    font-size: 22px;
     cursor: pointer;
-    }
+    z-index: 999;
+}
 
+.add-btn:hover {
+    transform: scale(1.1);
+}
+
+/* ✅ DELETE BUTTON (hide initially) */
+.delete-btn {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+/* ✅ Show delete on hover */
+.note-item:hover .delete-btn {
+    display: block;
+}
+
+/* ✅ FULL SCREEN EDITOR */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: white;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.hidden {
+    display: none;
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+}
+
+/* ✅ TITLE INPUT */
+.modal input {
+    font-size: 24px;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 15px;
+}
+
+/* ✅ EDITOR AREA */
 .editor {
     flex: 1;
     border: none;
     outline: none;
     padding: 10px;
     overflow-y: auto;
+    font-size: 16px;
 }
+
+/* ✅ TOOLBAR */
+.toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.toolbar button.active {
+    background: #007bff;
+    color: white;
+}
+
+/* ✅ SAVE BUTTON */
+.save-btn {
+    background: #228B22;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
 /* 🌙 DARK MODE */
 @media (prefers-color-scheme: dark) {
 
@@ -141,12 +168,18 @@ body {
     }
 
     .container {
-        background: #1e1e1e;
+        background: transparent;
     }
-    .note-item{
+
+    .note-item {
         background: #2a2a2a;
         color: white;
     }
+
+    .note-content {
+        color: #bbb;
+    }
+
     .overlay {
         background: #121212;
     }
@@ -155,11 +188,6 @@ body {
         background: transparent;
         color: white;
         border-bottom: 2px solid #555;
-    }
-    
-    .floating-btn {
-    background: white;
-    color: black;
     }
 
     .editor {
@@ -170,5 +198,10 @@ body {
     .toolbar button {
         background: #2a2a2a;
         color: white;
+    }
+
+    .add-btn {
+        background: white;
+        color: black;
     }
 }
