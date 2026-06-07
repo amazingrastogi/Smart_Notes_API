@@ -2,121 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Smart Notes App</title>
+    <title>Smart Notes</title>
 
-    <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f6f8;
-        color: #000;
-        margin: 0;
-        padding: 0;
-    }
-
-    .container {
-        width: 400px;
-        margin: 50px auto;
-        text-align: center;
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-        margin-bottom: 20px;
-    }
-
-    input {
-        width: 90%;
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        background: white;
-        color: black;
-    }
-
-    button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-
-    ul {
-        margin-top: 20px;
-        padding-left: 0;
-        list-style: none;
-    }
-
-    /* ✅ GRID STRUCTURE FOR PERFECT ALIGNMENT */
-    .note-wrapper {
-        display: grid;
-        grid-template-columns: 1fr 40px; /* NOTE + FIXED BUTTON COLUMN */
-        align-items: center;
-        margin: 10px 0;
-        column-gap: 10px;
-    }
-
-    /* ✅ NOTE BAR */
-    .note-item {
-        background: #eef1f5;
-        padding: 10px;
-        border-radius: 5px;
-        text-align: left;
-
-        /* Prevent uneven sizes */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    /* ✅ DELETE BUTTON (RIGHT SIDE, FIXED POSITION) */
-    .delete-btn {
-        background: none;
-        border: none;
-        font-size: 20px;
-        cursor: pointer;
-        color: red;
-    }
-
-    
-
-    /* 🌙 DARK MODE */
-    @media (prefers-color-scheme: dark) {
-        body {
-            background-color: #121212;
-            color: #ffffff;
-        }
-
-        .container {
-            background: #1e1e1e;
-            box-shadow: 0px 4px 10px rgba(255,255,255,0.1);
-        }
-
-        input {
-            background: #2c2c2c;
-            color: white;
-            border: 1px solid #555;
-        }
-
-        .note-item {
-            background: #2a2a2a;
-        }
-
-        .delete-btn {
-            color: #ff4d4d;
-        }
-    }
-</style>
-
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -124,86 +12,35 @@
 <div class="container">
     <h1>Smart Notes</h1>
 
-    <input type="text" id="title" placeholder="Enter title">
-    <input type="text" id="content" placeholder="Enter content">
+    <!-- EMPTY STATE -->
+    <div id="emptyState" class="empty">
+        No notes yet... <span onclick="openModal()">Click to add one ➕</span>
+    </div>
 
-    <button onclick="addNote()">Add Note</button>
-
-    <h2>All Notes</h2>
-    <ul id="notesList">
-        <!-- <li>Sample Note - Just a preview</li>
-        <li>Another Note - UI is ready ✅</li> -->
-    </ul>
+    <!-- NOTES LIST -->
+    <ul id="notesList"></ul>
 </div>
 
-<script>
-const API_URL = "http://127.0.0.1:8000";
+<!-- MODAL -->
+<div id="overlay" class="overlay hidden">
+    <div class="modal">
+        <input id="modalTitle" placeholder="Title">
 
-// ✅ Load notes from backend
-async function loadNotes() {
-    const res = await fetch(`${API_URL}/notes`);
-    const notes = await res.json();
+        <div id="modalContent" contenteditable="true" class="editor"></div>
 
-    const list = document.getElementById("notesList");
-    list.innerHTML = "";
+        <div class="toolbar">
+            <button id="boldBtn" onclick="formatText('bold')">B</button>
+            <button id="italicBtn" onclick="formatText('italic')">I</button>
+            <button id="underlineBtn" onclick="formatText('underline')">U</button>
+        </div>
 
-    notes.forEach((note, index) => {
+        <button class="save-btn" onclick="saveNote()">Save</button>
+        <button class="floating-btn" onclick="openModal()">➕</button>
 
-        const wrapper = document.createElement("div");
-        wrapper.className = "note-wrapper";
+    </div>
+</div>
 
-        const noteDiv = document.createElement("div");
-        noteDiv.className = "note-item";
-        noteDiv.innerText = note.title + " - " + note.content;
+<script src="script.js"></script>
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.innerHTML = "🗑️";
-        deleteBtn.className = "delete-btn";
-        deleteBtn.onclick = () => deleteNote(index);
-
-        wrapper.appendChild(noteDiv);
-        wrapper.appendChild(deleteBtn);
-
-        list.appendChild(wrapper);
-    });
-}
-async function deleteNote(note_id) {
-    console.log("Deleting note:", note_id);
-
-    await fetch(`${API_URL}/notes/${note_id}`, {
-        method: "DELETE"
-    });
-
-    loadNotes();
-}
-// ✅ Add note using API
-async function addNote() {
-    const title = document.getElementById("title").value;
-    const content = document.getElementById("content").value;
-
-    if (!title || !content) return;
-
-    await fetch(`${API_URL}/notes`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            title: title,
-            content: content
-        })
-    });
-
-    // reload notes
-    loadNotes();
-
-    // clear input
-    document.getElementById("title").value = "";
-    document.getElementById("content").value = "";
-}
-
-// ✅ Load notes on page start
-loadNotes();
-</script>
 </body>
 </html>
